@@ -44,14 +44,6 @@ class UserSerializerWithToken(serializers.ModelSerializer):
         fields = ('token', 'username', 'password')
 
 
-class ResumeSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username')
-
-    class Meta:
-        model = Resume
-        fields = ('user', 'name', 'contact_email', 'contact_phone')
-
-
 class EducationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Education
@@ -101,3 +93,15 @@ class ProjectSerializer(serializers.ModelSerializer):
                   'end_date',
                   'location',
                   'link')
+
+class ResumeSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+    education = EducationSerializer(many=True, required=False)
+    projects = ProjectSerializer(many=True, required=False)
+    skills = SkillSerializer(many=True, required=False)
+    links = LinkSerializer(many=True, required=False)
+    images = ResumeImageSerializer(many=True, required=False)
+
+    class Meta:
+        model = Resume
+        fields = ('user', 'name', 'contact_email', 'contact_phone', 'projects', 'skills', 'links', 'education', 'images',)

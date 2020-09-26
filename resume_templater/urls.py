@@ -17,8 +17,23 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView
+
+from rest_framework.schemas import get_schema_view
+
+schema_url_patterns = [path('api/', include('resume_api.urls')), ]
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
-                  path('api/', include('resume_api.urls')),
+                  *schema_url_patterns,
+                  path('openapi', get_schema_view(
+                      title="Resume Templater",
+                      description="API for templating resumes",
+                      version="0.0.1",
+                      patterns=schema_url_patterns
+                  ), name='openapi-schema'),
+                  path('swagger-ui/', TemplateView.as_view(
+                      template_name='swagger-ui.html',
+                      extra_context={'schema_url': 'openapi-schema'}
+                  ), name='swagger-ui'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
