@@ -1,12 +1,16 @@
+from django.contrib.auth import get_user_model
+from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Resume, Education, Project, Link, Skill, Work, ResumeImage
 from .serializers import ResumeSerializer, EducationSerializer, \
-    ProjectSerializer, LinkSerializer, SkillSerializer, WorkSerializer, UserSerializer, UserSerializerWithToken, \
+    ProjectSerializer, LinkSerializer, SkillSerializer, WorkSerializer, UserSerializerWithToken, \
     ResumeImageSerializer
-from rest_framework import generics, permissions, status
+
+
+User = get_user_model()
 
 
 class ResumeListCreate(generics.ListCreateAPIView):
@@ -48,12 +52,12 @@ class ResumeImageListCreate(generics.ListCreateAPIView):
 
 @api_view(['GET'])
 def current_user(request):
-    """
-    Determine the current user by their token, and return their data
-    """
-
-    serializer = UserSerializer(request.user)
-    return Response(serializer.data)
+    user = request.user
+    resumes = ResumeSerializer(Resume.objects.filter(user=user), many=True)
+    return Response({
+        'username': user.username,
+        'resumes': resumes.data
+    })
 
 
 class UserList(APIView):
