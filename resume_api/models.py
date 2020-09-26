@@ -43,7 +43,7 @@ class Work(models.Model):
     description = models.TextField(help_text="The description of the work")
     start_date = models.DateField(help_text="The start date of the work")
     end_date = models.DateField(null=True, help_text="The end date of the work, if applicable")
-    location = models.DateField(null=True, help_text="The location of the work, if applicable")
+    location = models.CharField(max_length=200, null=True, help_text="The location of the work, if applicable")
 
     def __str__(self):
         return f"Work {self.name} for {self.resume}"
@@ -57,7 +57,7 @@ class Project(models.Model):
     description = models.TextField(help_text="The description of the project")
     start_date = models.DateField(help_text="The start date of the project")
     end_date = models.DateField(null=True, help_text="The end date of the project, if applicable")
-    location = models.DateField(null=True, help_text="The location of the project, if applicable")
+    location = models.CharField(max_length=200, null=True, help_text="The location of the project, if applicable")
     link = models.URLField(null=True, max_length=200, help_text="The url for the project")
 
     def __str__(self):
