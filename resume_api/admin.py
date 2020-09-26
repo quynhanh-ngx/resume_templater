@@ -6,3 +6,7 @@ from resume_api import models
 @admin.register(models.Resume)
 class ResumeAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(models.Education)
+class EducationAdmin(admin.ModelAdmin):
+    pass
