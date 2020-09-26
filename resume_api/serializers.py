@@ -2,9 +2,15 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_jwt.settings import api_settings
 
-from .models import Resume, Education, Skill, Link, Work, Project
+from .models import Resume, Education, Skill, Link, Work, Project, ResumeImage
 
 User = get_user_model()
+
+
+class ResumeImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ResumeImage
+        fields = ('resume', 'name', 'image')
 
 
 class UserSerializer(serializers.ModelSerializer):

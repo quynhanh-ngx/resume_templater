@@ -72,3 +72,13 @@ class Resume(models.Model):
 
     def __str__(self):
         return f"{self.user}'s Resume (#{self.id})"
+
+
+class ResumeImage(models.Model):
+    resume = models.ForeignKey('Resume', related_name='images', on_delete=models.CASCADE,
+                               help_text="Resume the image belongs to")
+    name = models.CharField(max_length=200, help_text="Name of the image")
+    image = models.ImageField(upload_to='resume_media/images/', help_text="Image for a resume")
+
+    def __str__(self):
+        return f"ResumeImage(resume={self.resume})"

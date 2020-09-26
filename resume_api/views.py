@@ -2,9 +2,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Resume, Education, Project, Link, Skill, Work
+from .models import Resume, Education, Project, Link, Skill, Work, ResumeImage
 from .serializers import ResumeSerializer, EducationSerializer, \
-    ProjectSerializer, LinkSerializer, SkillSerializer, WorkSerializer, UserSerializer, UserSerializerWithToken
+    ProjectSerializer, LinkSerializer, SkillSerializer, WorkSerializer, UserSerializer, UserSerializerWithToken, \
+    ResumeImageSerializer
 from rest_framework import generics, permissions, status
 
 
@@ -39,6 +40,10 @@ class SkillListCreate(generics.ListCreateAPIView):
 class WorkListCreate(generics.ListCreateAPIView):
     queryset = Work.objects.all()
     serializer_class = WorkSerializer
+
+class ResumeImageListCreate(generics.ListCreateAPIView):
+    queryset = ResumeImage.objects.all()
+    serializer_class = ResumeImageSerializer
 
 
 @api_view(['GET'])
