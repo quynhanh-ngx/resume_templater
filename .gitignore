@@ -4,4 +4,6 @@ venv
 *.sqlite3
 media/resume_media/images/*
 !media/resume_media/.gitkeep
-
+resume_templater/gcp_sql_password
+cloud_sql_proxy
+static

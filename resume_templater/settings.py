@@ -30,6 +30,12 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'oatsbackend.local',
+
+# SECURITY WARNING: App Engine's security features ensure that it is safe to
+# have ALLOWED_HOSTS = ['*'] when the app is deployed. If you deploy a Django
+# app not on App Engine, make sure to set an appropriate host here.
+# See https://docs.djangoproject.com/en/2.1/ref/settings/
+'*'
 ]
 
 
@@ -84,12 +90,56 @@ WSGI_APPLICATION = 'resume_templater.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Install PyMySQL as mysqlclient/MySQLdb to use Django's mysqlclient adapter
+# See https://docs.djangoproject.com/en/2.1/ref/databases/#mysql-db-api-drivers
+# for more information
+import pymysql  # noqa: 402
+pymysql.version_info = (1, 4, 6, 'final', 0)  # change mysqlclient version
+pymysql.install_as_MySQLdb()
+
+with open(BASE_DIR / 'resume_templater' / 'gcp_sql_password') as f:
+    db_password = f.read().strip()
+
+# [START db_setup]
+if os.getenv('GAE_APPLICATION', None):
+    # Running on production App Engine, so connect to Google Cloud SQL using
+    # the unix socket at /cloudsql/<your-cloudsql-connection string>
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': '/cloudsql/resume-templater:us-east1:resume-api-instance',
+            'USER': 'resume-api',
+            'PASSWORD': db_password,
+            'NAME': 'resume_api',
+        }
     }
-}
+else:
+    # Running locally so connect to either a local MySQL instance or connect to
+    # Cloud SQL via the proxy. To start the proxy via command line:
+    #
+    #     $ cloud_sql_proxy -instances=[INSTANCE_CONNECTION_NAME]=tcp:3306
+    #
+    # See https://cloud.google.com/sql/docs/mysql-connect-proxy
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+            'USER': 'resume-api',
+            'PASSWORD': db_password,
+            'NAME': 'resume_api',
+        }
+    }
+# [END db_setup]
+
+# Use a in-memory sqlite3 database when testing in CI systems
+if os.getenv('TRAMPOLINE_CI', None):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3'
+        }
+    }
 
 
 # Password validation
@@ -129,6 +179,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static'
 
 # Media files (User uploaded content)
 # https://docs.djangoproject.com/en/3.0/topics/files/
@@ -154,9 +205,16 @@ JWT_AUTH = {
 }
 
 # CORS
-CORS_ORIGIN_WHITELIST = (
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://oats.local:3000',
-    'http://oats.local:3001',
-)
+# CORS_ORIGIN_WHITELIST = (
+#     'http://localhost:3000',
+#     'http://localhost:3001',
+#     'http://oats.local:3000',
+#     'http://oats.local:3001',
+# )
+#
+# CORS_ALLOWED_ORIGIN_REGEXES = [
+#     r"^https://\w+\.example\.com$",
+# ]
+
+# TODO: Disable after dev phase
+CORS_ALLOW_ALL_ORIGINS = True
