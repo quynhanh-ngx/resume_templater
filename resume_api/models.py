@@ -15,13 +15,6 @@ from datetime import datetime
 #
 #
 # @dataclass
-# class Contact:
-#     email: str
-#     phone: str
-#     links: List[str]
-#
-#
-# @dataclass
 # class Education:
 #     name: str
 #     grad_date: datetime
@@ -48,9 +41,11 @@ from datetime import datetime
 
 class Resume(models.Model):
     name = models.CharField(max_length=200, help_text="The name of the resume owner")
-    # contact: Contact
+    contact_email = models.EmailField(help_text="The email that will appear on the resume")
+    contact_phone = models.CharField(max_length=15)
     # education: List[Education]
     # projects: List[Award]
     # work: List[Work]
     # awards: List[Award]
     # skill_categories: List[SkillCategory]
+    #     links: List[str]
